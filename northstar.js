@@ -127,7 +127,8 @@ ${prefix}
                     var hasPwd = data[i]["hasPassword"]
 
                     protectedLobbies += hasPwd ? 1 : 0;
-                    playersOnline += hasPwd ? 0 : data[i]["playerCount"];
+                    playersOnline += hasPwd ? 0 : (data[i]["playerCount"] == undefined ? 0 : data[i]["playerCount"]);
+
                     playerSlots += hasPwd ? 0: data[i]["maxPlayers"];
                 }
                 msg.channel.send(`\`\`\`diff\n
