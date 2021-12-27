@@ -100,7 +100,16 @@ client.on('message', async msg => {
     switch (args[0]) {
 
         case "help":
-            msg.channel.send(`\`\`\`diff\n+ Here are a list of all available commands:\n${prefix}status - a general overview of northstar.tf\n${prefix}search [string] - searches server titles\`\`\``)
+            msg.channel.send(
+
+`\`\`\`diff\n+ Here are a list of all available commands:\n
+${prefix}status             - a general overview of northstar.tf\n
+${prefix}search [string]    - searches server titles\n
+${prefix}searchmode [gamemode]    - searches all servers running that mode
+${prefix}searchmap [map]          - searches all servers running that map
+${prefix}
+\`\`\``)
+
             break;
 
         case "status":
@@ -113,11 +122,21 @@ client.on('message', async msg => {
             else {
                 var playersOnline = 0;
                 var protectedLobbies = 0;
+                var playerSlots = 0;
                 for (i = 0; i < data.length; i++) {
-                    playersOnline += data[i]["playerCount"];
-                    protectedLobbies += data[i]["hasPassword"] ? 1 : 0;
+                    var hasPwd = data[i]["hasPassword"]
+
+                    protectedLobbies += hasPwd ? 1 : 0;
+                    playersOnline += hasPwd ? 0 : data[i]["playerCount"];
+                    playerSlots += hasPwd ? 0: data[i]["maxPlayers"];
                 }
-                msg.channel.send(`\`\`\`diff\n- ## NORTHSTAR.TF STATUS: ##\n+ Servers Online: ${data.length}\n+ Players in-game: ${playersOnline}\n+ Password Protected Servers: ${protectedLobbies}\`\`\``)
+                msg.channel.send(`\`\`\`diff\n
+## NORTHSTAR.TF STATUS: ##\n
++ Servers Online: ${data.length}\n
+- Password Protected Servers: ${protectedLobbies}\n
++ Players in-game: ${playersOnline}/${playerSlots} (${Math.round((playersOnline/playerSlots)*100)}%)
+\`\`\``)
+
             }
 
             break;
@@ -129,6 +148,7 @@ client.on('message', async msg => {
             if (typeof data == typeof "string") {
                 msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
             }
+            else if (!args[1]) {msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``)}
             else {
                 var lobbies = [];
                 for (i = 0; i < data.length; i++) {
@@ -141,15 +161,110 @@ client.on('message', async msg => {
                     msg.channel.send(`\`\`\`diff\n- No servers were found.\`\`\``)
                 }
                 else {
-                    var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found!\n`
+                    var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 9 ? " - displaying first 10 results" : "."}\n`
+                    try{
+                        for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
+                            searchstring += `
+${lobbies[i]["name"]}
+${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
+${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}
+`}`
 
-                    for (i = 0; i < lobbies.length; i++) {
-                        searchstring += `\n${lobbies[i]["name"]}\n${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected\n${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}`}`
+                        }
+                    }
+                    catch{
+                        searchstring = "```diff\n- Search failed. Please try again"
+
                     }
                     msg.channel.send(searchstring + "```")
                 }
-
-                break;
             }
+            break;
+
+        case "searchmode":
+            var url = "https://northstar.tf/client/servers"
+            var data = await getServers(url)
+
+            if (typeof data == typeof "string") {
+                msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
+            }
+            else if (!args[1]) {msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``)}
+            else {
+                if (getGamemode(args[1].toLowerCase()) == undefined){
+                    return msg.channel.send("```diff\n- Please specify a valid gamemode```")
+                }
+                var lobbies = [];
+                for (i = 0; i < data.length; i++) {
+                    if (data[i]["playlist"].toLowerCase() == (args[1].toLowerCase())) {
+                        lobbies.push(data[i])
+                    }
+                }
+
+                if (lobbies.length == 0) {
+                    msg.channel.send(`\`\`\`diff\n- No servers were found.\`\`\``)
+                }
+                else {
+                    var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 9 ? " - displaying first 10 results" : "."}\n`
+                    try{
+                        for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
+                            searchstring += `
+${lobbies[i]["name"]}
+${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
+${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}
+`}`
+
+                        }
+                    }
+                    catch{
+                        searchstring = "```diff\n- Search failed. Please try again"
+
+                    }
+                    msg.channel.send(searchstring + "```")
+                }
+            }
+            break;
+
+        case "searchmap":
+            var url = "https://northstar.tf/client/servers"
+            var data = await getServers(url)
+
+            if (typeof data == typeof "string") {
+                msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
+            }
+            else if (!args[1]) {msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``)}
+            else {
+                if (getMapName(args[1].toLowerCase()) == undefined){
+                    return msg.channel.send("```diff\n- Please specify a valid map```")
+                }
+                var lobbies = [];
+                for (i = 0; i < data.length; i++) {
+                    if (data[i]["map"].toLowerCase() == (args[1].toLowerCase())) {
+                        lobbies.push(data[i])
+                    }
+                }
+
+                if (lobbies.length == 0) {
+                    msg.channel.send(`\`\`\`diff\n- No servers were found.\`\`\``)
+                }
+                else {
+                    var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 9 ? " - displaying first 10 results" : "."}\n`
+                    try{
+                        for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
+                            searchstring += `
+${lobbies[i]["name"]}
+${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
+${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}
+`}`
+
+                        }
+                    }
+                    catch{
+                        searchstring = "```diff\n- Search failed. Please try again"
+
+                    }
+                    msg.channel.send(searchstring + "```")
+                }
+            }
+            break;
         }
     })
