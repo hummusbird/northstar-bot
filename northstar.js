@@ -150,8 +150,8 @@ ${prefix}host                   - links hummusbird's server tutorial
                 msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
             }
             else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify title, map or mode.\`\`\``) }
-            else if (!args[2]) { msg.channel.send(`\`\`\`diff\n- Please specify a search term.\`\`\``) }
             else {
+                var search = args[2];
                 var parameter = "name";
                 if (args[1] == "title" || args[1] == "name") {
                     parameter = "name"
@@ -164,11 +164,11 @@ ${prefix}host                   - links hummusbird's server tutorial
                     if (getGamemode(args[2]) == undefined) { return msg.channel.send(`\`\`\`diff\n- Please specify a valid gamemode.\`\`\``) }
                     parameter = "playlist"
                 }
-                else { return msg.channel.send(`\`\`\`diff\n- Please specify title, map or mode.\`\`\``) }
+                else { search = args[1] }
 
                 var lobbies = [];
                 for (i = 0; i < data.length; i++) {
-                    if (data[i][parameter].toLowerCase().includes(args[2].toLowerCase())) {
+                    if (data[i][parameter].toLowerCase().includes(search.toLowerCase())) {
                         lobbies.push(data[i])
                     }
                 }
