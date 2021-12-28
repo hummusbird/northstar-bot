@@ -11,59 +11,59 @@ client.on('ready', async () => {
 
 const urlR = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
 const prefix = ','
+const maps = {
+    "mp_angel_city": "Angel City",
+    "mp_black_water_canal": "Black Water Canal",
+    "mp_grave": "Boomtown",
+    "mp_colony02": "Colony",
+    "mp_complex3": "Complex",
+    "mp_crashsite3": "Crashsite",
+    "mp_drydock": "DryDock",
+    "mp_eden": "Eden",
+    "mp_thaw": "Exoplanet",
+    "mp_forwardbase_kodai": "Forward Base Kodai",
+    "mp_glitch": "Glitch",
+    "mp_homestead": "Homestead",
+    "mp_relic02": "Relic",
+    "mp_rise": "Rise",
+    "mp_wargames": "Wargames",
+    "mp_lobby": "Lobby",
+    "mp_lf_deck": "Deck",
+    "mp_lf_meadow": "Meadow",
+    "mp_lf_stacks": "Stacks",
+    "mp_lf_township": "Township",
+    "mp_lf_traffic": "Traffic",
+    "mp_lf_uma": "UMA",
+    "mp_coliseum": "The Coliseum",
+    "mp_coliseum_column": "Pillars"
+}
+
+const modes = {
+    "tdm": "Skirmish",
+    "cp": "Amped Hardpoint",
+    "ctf": "Capture the Flag",
+    "lts": "Last Titan Standing",
+    "ps": "Pilots V Pilots",
+    "ffa": "Free For All",
+    "speedball": "Live Fire",
+    "mfd": "Marked for Death",
+    "ttdm": "Titan Brawl",
+    "fra": "Free Agents",
+    "gg": "Gun Game",
+    "inf": "Infection",
+    "tt": "Titan Tag",
+    "kr": "Amped Killrace",
+    "fastball": "Fastball",
+    "arena": "1v1 Arena",
+    "ctf_comp": "Capture the Flag",
+    "hs": "Hide and Seek"
+}
 
 function getMapName(name) {
-    var maps = {
-        "mp_angel_city": "Angel City",
-        "mp_black_water_canal": "Black Water Canal",
-        "mp_grave": "Boomtown",
-        "mp_colony02": "Colony",
-        "mp_complex3": "Complex",
-        "mp_crashsite3": "Crashsite",
-        "mp_drydock": "DryDock",
-        "mp_eden": "Eden",
-        "mp_thaw": "Exoplanet",
-        "mp_forwardbase_kodai": "Forward Base Kodai",
-        "mp_glitch": "Glitch",
-        "mp_homestead": "Homestead",
-        "mp_relic02": "Relic",
-        "mp_rise": "Rise",
-        "mp_wargames": "Wargames",
-        "mp_lobby": "Lobby",
-        "mp_lf_deck": "Deck",
-        "mp_lf_meadow": "Meadow",
-        "mp_lf_stacks": "Stacks",
-        "mp_lf_township": "Township",
-        "mp_lf_traffic": "Traffic",
-        "mp_lf_uma": "UMA",
-        "mp_coliseum": "The Coliseum",
-        "mp_coliseum_column": "Pillars",
-
-    }
     return maps[name]
 }
 
 function getGamemode(mode) {
-    var modes = {
-        "tdm" : "Skirmish",
-        "cp" : "Amped Hardpoint",
-        "ctf" : "Capture the Flag",
-        "lts" : "Last Titan Standing",
-        "ps" : "Pilots V Pilots",
-        "ffa" : "Free For All",
-        "speedball" : "Live Fire",
-        "mfd" : "Marked for Death",
-        "ttdm": "Titan Brawl",
-        "fra" : "Free Agents",
-        "gg" : "Gun Game",
-        "inf" : "Infection",
-        "tt" : "Titan Tag",
-        "kr" : "Amped Killrace",
-        "fastball" : "Fastball",
-        "arena" : "1v1 Arena",
-        "ctf_comp" : "Capture the Flag",
-        "hs" : "Hide and Seek"
-    }
     return modes[mode]
 }
 
@@ -102,12 +102,15 @@ client.on('message', async msg => {
         case "help":
             msg.channel.send(
 
-`\`\`\`diff\n+ Here are a list of all available commands:\n
-${prefix}status             - a general overview of northstar.tf\n
-${prefix}search [string]    - searches server titles\n
-${prefix}searchmode [gamemode]    - searches all servers running that mode
-${prefix}searchmap [map]          - searches all servers running that map
-${prefix}
+                `\`\`\`diff\n+ Here are a list of all available commands:
+${prefix}status                 - a general overview of northstar.tf
+${prefix}search [string]        - searches server titles
+${prefix}searchmode [gamemode]  - searches all servers running that mode
+${prefix}searchmap [map]        - searches all servers running that map
+${prefix}convars                - lists all available convars
+${prefix}modes                  - lists all Titanfall 2 gamemodes
+${prefix}maps                   - lists all Titanfall 2 maps
+${prefix}host                   - links hummusbird's tutorial
 \`\`\``)
 
             break;
@@ -128,14 +131,13 @@ ${prefix}
 
                     protectedLobbies += hasPwd ? 1 : 0;
                     playersOnline += hasPwd ? 0 : (data[i]["playerCount"] == undefined ? 0 : data[i]["playerCount"]);
-
-                    playerSlots += hasPwd ? 0: data[i]["maxPlayers"];
+                    playerSlots += hasPwd ? 0 : data[i]["maxPlayers"];
                 }
                 msg.channel.send(`\`\`\`diff\n
 ## NORTHSTAR.TF STATUS: ##\n
 + Servers Online: ${data.length}\n
 - Password Protected Servers: ${protectedLobbies}\n
-+ Players in-game: ${playersOnline}/${playerSlots} (${Math.round((playersOnline/playerSlots)*100)}%)
++ Players in-game: ${playersOnline}/${playerSlots} (${Math.round((playersOnline / playerSlots) * 100)}%)
 \`\`\``)
 
             }
@@ -149,7 +151,7 @@ ${prefix}
             if (typeof data == typeof "string") {
                 msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
             }
-            else if (!args[1]) {msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``)}
+            else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``) }
             else {
                 var lobbies = [];
                 for (i = 0; i < data.length; i++) {
@@ -163,17 +165,17 @@ ${prefix}
                 }
                 else {
                     var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 9 ? " - displaying first 10 results" : "."}\n`
-                    try{
+                    try {
                         for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
                             searchstring += `
 ${lobbies[i]["name"]}
 ${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
-${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}
+${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}${lobbies[i]["hasPassword"] ? `\n- PASSWORD PROTECTED!` : ""}
 `}`
 
                         }
                     }
-                    catch{
+                    catch {
                         searchstring = "```diff\n- Search failed. Please try again"
 
                     }
@@ -189,9 +191,9 @@ ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${ge
             if (typeof data == typeof "string") {
                 msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
             }
-            else if (!args[1]) {msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``)}
+            else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``) }
             else {
-                if (getGamemode(args[1].toLowerCase()) == undefined){
+                if (getGamemode(args[1].toLowerCase()) == undefined) {
                     return msg.channel.send("```diff\n- Please specify a valid gamemode```")
                 }
                 var lobbies = [];
@@ -206,17 +208,17 @@ ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${ge
                 }
                 else {
                     var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 9 ? " - displaying first 10 results" : "."}\n`
-                    try{
+                    try {
                         for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
                             searchstring += `
 ${lobbies[i]["name"]}
 ${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
-${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}
+${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}${lobbies[i]["hasPassword"] ? `\n- PASSWORD PROTECTED!` : ""}
 `}`
 
                         }
                     }
-                    catch{
+                    catch {
                         searchstring = "```diff\n- Search failed. Please try again"
 
                     }
@@ -232,9 +234,9 @@ ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${ge
             if (typeof data == typeof "string") {
                 msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
             }
-            else if (!args[1]) {msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``)}
+            else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``) }
             else {
-                if (getMapName(args[1].toLowerCase()) == undefined){
+                if (getMapName(args[1].toLowerCase()) == undefined) {
                     return msg.channel.send("```diff\n- Please specify a valid map```")
                 }
                 var lobbies = [];
@@ -249,17 +251,17 @@ ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${ge
                 }
                 else {
                     var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 9 ? " - displaying first 10 results" : "."}\n`
-                    try{
+                    try {
                         for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
                             searchstring += `
 ${lobbies[i]["name"]}
 ${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
-${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}
+${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}${lobbies[i]["hasPassword"] ? `\n- PASSWORD PROTECTED!` : ""}
 `}`
 
                         }
                     }
-                    catch{
+                    catch {
                         searchstring = "```diff\n- Search failed. Please try again"
 
                     }
@@ -267,5 +269,104 @@ ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${ge
                 }
             }
             break;
-        }
-    })
+
+        case "maps":
+        case "map":
+            msg.channel.send(`\`\`\`diff\n+ Titanfall 2 Maps:
+mp_angel_city        - Angel City
+mp_black_water_canal - Black Water Canal
+mp_grave             - Boomtown
+mp_colony02          - Colony
+mp_complex3          - Complex
+mp_crashsite3        - Crashsite
+mp_drydock           - DryDock
+mp_eden              - Eden
+mp_thaw              - Exoplanet
+mp_forwardbase_kodai - Forward Base Kodai
+mp_glitch            - Glitch
+mp_homestead         - Homestead
+mp_relic02           - Relic
+mp_rise              - Rise
+mp_wargames          - Wargames
+mp_lobby             - Lobby
+mp_lf_deck           - Deck
+mp_lf_meadow         - Meadow
+mp_lf_stacks         - Stacks
+mp_lf_township       - Township
+mp_lf_traffic        - Traffic
+mp_lf_uma            - UMA
+mp_coliseum          - The Coliseum
+mp_coliseum_column   - Pillars\`\`\``)
+
+            break;
+
+        case "mode":
+        case "modes":
+        case "gamemodes":
+        case "gamemode":
+            msg.channel.send(`\`\`\`diff\n+ Titanfall 2 Gamemodes:
+tdm       - Skirmish
+cp        - Amped Hardpoint
+ctf       - Capture the Flag
+lts       - Last Titan Standing
+ps        - Pilots V Pilots
+ffa       - Free For All
+speedball - Live Fire
+mfd       - Marked for Death
+ttdm      - Titan Brawl
+fra       - Free Agents
+gg        - Gun Game
+inf       - Infection
+tt        - Titan Tag
+kr        - Amped Killrace
+fastball  - Fastball
+arena     - 1v1 Arena
+ctf_comp  - Capture the Flag
+hs        - Hide and Seek\`\`\``)
+            break;
+
+        case "host":
+        case "birb":
+        case "vid":
+            msg.channel.send("https://youtu.be/EZ3w2Nl9SZo")
+            break;
+
+        case "bio":
+            if (msg.author.id == 375671695240855553 /* hummusbird */) {
+                var status = args[1]
+                var statusType = args[2]
+                var words = msg.content.split(statusType)[1].trim()
+
+                if ((status == "online" || status == "idle" || status == "dnd" || status == "invisible") && (statusType == "STREAMING" || statusType == "LISTENING" || statusType == "PLAYING" || statusType == "WATCHING" || statusType == "COMPETING")) {
+
+                    if (statusType == "STREAMING" || statusType == "WATCHING") {
+                        client.user.setPresence({
+                            status: status,
+                            activity: {
+                                name: words,
+                                url: "https://www.twitch.tv/hummusbirb",
+                                type: statusType
+                            }
+                        })
+                    } 
+                    else {
+                        client.user.setPresence({
+                            status: status,
+                            activity: {
+                                name: words,
+                                type: statusType
+                            }
+                        })
+                    }
+
+                    msg.channel.send("```diff\n+ status set```")
+                    console.log(`${msg.author.username} set status to ${status}, ${statusType}, ${words}`)
+                } 
+                else {
+                    msg.channel.send("```diff\n- invalid lol >:)```")
+                }
+            }
+
+            break;
+    }
+})
