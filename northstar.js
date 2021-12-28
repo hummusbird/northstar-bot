@@ -154,6 +154,7 @@ ${prefix}host                   - links hummusbird's server tutorial
                 var search = args[2];
                 var parameter = "name";
                 if (args[1] == "title" || args[1] == "name") {
+                    if (!args[2]) {return msg.channel.send(`\`\`\`diff\n- Please specify a search term.\`\`\``)}
                     parameter = "name"
                 }
                 else if (args[1] == "map" || args[1] == "maps") {
@@ -164,6 +165,7 @@ ${prefix}host                   - links hummusbird's server tutorial
                     if (getGamemode(args[2]) == undefined) { return msg.channel.send(`\`\`\`diff\n- Please specify a valid gamemode.\`\`\``) }
                     parameter = "playlist"
                 }
+
                 else { search = args[1] }
 
                 var lobbies = [];
