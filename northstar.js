@@ -7,6 +7,7 @@ client.login(process.env.BOT_TOKEN)
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    client.user.setActivity('Northstar.TF', { type: 'PLAYING' })
 });
 
 const url = "https://northstar.tf/client/servers"
@@ -107,10 +108,10 @@ ${prefix}status                 - a general overview of northstar.tf
 ${prefix}search title [string]  - searches server titles
 ${prefix}search mode [gamemode] - searches all servers running that mode
 ${prefix}search map [map]       - searches all servers running that map
-${prefix}convars                - lists all available convars
+${prefix}convars                - lists some useful ConVars
 ${prefix}modes                  - lists all Titanfall 2 gamemodes
 ${prefix}maps                   - lists all Titanfall 2 maps
-${prefix}host                   - links hummusbird's tutorial
+${prefix}host                   - links hummusbird's server tutorial
 \`\`\``)
 
             break;
@@ -138,7 +139,6 @@ ${prefix}host                   - links hummusbird's tutorial
 - Password Protected Servers: ${protectedLobbies}\n
 + Players in-game: ${playersOnline}/${playerSlots} (${Math.round((playersOnline / playerSlots) * 100)}%)
 \`\`\``)
-
             }
 
             break;
@@ -152,7 +152,7 @@ ${prefix}host                   - links hummusbird's tutorial
             else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify title, map or mode.\`\`\``) }
             else if (!args[2]) { msg.channel.send(`\`\`\`diff\n- Please specify a search term.\`\`\``) }
             else {
-                var parameter;
+                var parameter = "name";
                 if (args[1] == "title" || args[1] == "name") {
                     parameter = "name"
                 }
@@ -258,42 +258,53 @@ hs        - Hide and Seek\`\`\``)
             msg.channel.send("https://youtu.be/EZ3w2Nl9SZo")
             break;
 
-        case "bio":
-            if (msg.author.id == 375671695240855553 /* hummusbird */) {
-                var status = args[1]
-                var statusType = args[2]
-                var words = msg.content.split(statusType)[1].trim()
+        case "convars":
+            msg.channel.send(`\`\`\`diff
+custom_air_accel_pilot
+pilot_health_multiplier
+run_epilogue
+respawn_delay
 
-                if ((status == "online" || status == "idle" || status == "dnd" || status == "invisible") && (statusType == "STREAMING" || statusType == "LISTENING" || statusType == "PLAYING" || statusType == "WATCHING" || statusType == "COMPETING")) {
+boosts_enabled
+earn_meter_pilot_overdrive
+earn_meter_pilot_multiplier
 
-                    if (statusType == "STREAMING" || statusType == "WATCHING") {
-                        client.user.setPresence({
-                            status: status,
-                            activity: {
-                                name: words,
-                                url: "https://www.twitch.tv/hummusbirb",
-                                type: statusType
-                            }
-                        })
-                    } 
-                    else {
-                        client.user.setPresence({
-                            status: status,
-                            activity: {
-                                name: words,
-                                type: statusType
-                            }
-                        })
-                    }
+earn_meter_titan_multiplier
+aegis_upgrades
+infinite_doomed_state
+titan_shield_regen
 
-                    msg.channel.send("```diff\n+ status set```")
-                    console.log(`${msg.author.username} set status to ${status}, ${statusType}, ${words}`)
-                } 
-                else {
-                    msg.channel.send("```diff\n- invalid lol >:)```")
-                }
-            }
+scorelimit
+roundscorelimit
+timelimit
+oob_timer_enabled
+roundtimelimit
 
-            break;
+classic_rodeo
+classic_mp
+fp_embark_enabled
+promode_enable
+
+riff_floorislava
+featured_mode_all_holopilot
+featured_mode_all_grapple
+featured_mode_all_phase
+featured_mode_all_ticks
+featured_mode_tactikill
+featured_mode_amped_tacticals
+featured_mode_rocket_arena
+featured_mode_shotguns_snipers
+iron_rules
+
+riff_player_bleedout
+player_bleedout_forceHolster
+player_bleedout_forceDeathOnTeamBleedout
+player_bleedout_bleedoutTime
+player_bleedout_firstAidTime
+player_bleedout_firstAidTimeSelf
+player_bleedout_firstAidHealPercent
+player_bleedout_aiBleedingPlayerMissChance
+\`\`\``)
+        break;
     }
 })
