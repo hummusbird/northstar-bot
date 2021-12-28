@@ -9,6 +9,7 @@ client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
+const url = "https://northstar.tf/client/servers"
 const urlR = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
 const prefix = ','
 const maps = {
@@ -85,7 +86,7 @@ async function getServers(url) {
         }
     }
     catch (e) {
-        console.log("api serror")
+        console.log("api error")
         return `${url} is unavailable!`
     }
 }
@@ -100,13 +101,12 @@ client.on('message', async msg => {
     switch (args[0]) {
 
         case "help":
-            msg.channel.send(
-
-                `\`\`\`diff\n+ Here are a list of all available commands:
+            msg.channel.send(`\`\`\`diff
++ Here are a list of all available commands:
 ${prefix}status                 - a general overview of northstar.tf
-${prefix}search [string]        - searches server titles
-${prefix}searchmode [gamemode]  - searches all servers running that mode
-${prefix}searchmap [map]        - searches all servers running that map
+${prefix}search title [string]  - searches server titles
+${prefix}search mode [gamemode] - searches all servers running that mode
+${prefix}search map [map]       - searches all servers running that map
 ${prefix}convars                - lists all available convars
 ${prefix}modes                  - lists all Titanfall 2 gamemodes
 ${prefix}maps                   - lists all Titanfall 2 maps
@@ -116,7 +116,6 @@ ${prefix}host                   - links hummusbird's tutorial
             break;
 
         case "status":
-            var url = "https://northstar.tf/client/servers"
             var data = await getServers(url)
 
             if (typeof data == typeof "string") {
@@ -145,17 +144,31 @@ ${prefix}host                   - links hummusbird's tutorial
             break;
 
         case "search":
-            var url = "https://northstar.tf/client/servers"
             var data = await getServers(url)
 
             if (typeof data == typeof "string") {
                 msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
             }
-            else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``) }
+            else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify title, map or mode.\`\`\``) }
+            else if (!args[2]) { msg.channel.send(`\`\`\`diff\n- Please specify a search term.\`\`\``) }
             else {
+                var parameter;
+                if (args[1] == "title" || args[1] == "name") {
+                    parameter = "name"
+                }
+                else if (args[1] == "map" || args[1] == "maps") {
+                    if (getMapName(args[2]) == undefined) { return msg.channel.send(`\`\`\`diff\n- Please specify a valid map.\`\`\``) }
+                    parameter = "map"
+                }
+                else if (args[1] == "mode" || args[1] == "modes" || args[1] == "gamemode"){
+                    if (getGamemode(args[2]) == undefined) { return msg.channel.send(`\`\`\`diff\n- Please specify a valid gamemode.\`\`\``) }
+                    parameter = "playlist"
+                }
+                else { return msg.channel.send(`\`\`\`diff\n- Please specify title, map or mode.\`\`\``) }
+
                 var lobbies = [];
                 for (i = 0; i < data.length; i++) {
-                    if (data[i]["name"].toLowerCase().includes(args[1].toLowerCase())) {
+                    if (data[i][parameter].toLowerCase().includes(args[2].toLowerCase())) {
                         lobbies.push(data[i])
                     }
                 }
@@ -171,92 +184,6 @@ ${prefix}host                   - links hummusbird's tutorial
 ${lobbies[i]["name"]}
 ${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
 ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}${lobbies[i]["hasPassword"] ? `\n- PASSWORD PROTECTED!` : ""}
-`}`
-
-                        }
-                    }
-                    catch {
-                        searchstring = "```diff\n- Search failed. Please try again"
-
-                    }
-                    msg.channel.send(searchstring + "```")
-                }
-            }
-            break;
-
-        case "searchmode":
-            var url = "https://northstar.tf/client/servers"
-            var data = await getServers(url)
-
-            if (typeof data == typeof "string") {
-                msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
-            }
-            else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``) }
-            else {
-                if (getGamemode(args[1].toLowerCase()) == undefined) {
-                    return msg.channel.send("```diff\n- Please specify a valid gamemode```")
-                }
-                var lobbies = [];
-                for (i = 0; i < data.length; i++) {
-                    if (data[i]["playlist"].toLowerCase() == (args[1].toLowerCase())) {
-                        lobbies.push(data[i])
-                    }
-                }
-
-                if (lobbies.length == 0) {
-                    msg.channel.send(`\`\`\`diff\n- No servers were found.\`\`\``)
-                }
-                else {
-                    var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 9 ? " - displaying first 10 results" : "."}\n`
-                    try {
-                        for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
-                            searchstring += `
-${lobbies[i]["name"]}
-${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
-${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}${lobbies[i]["hasPassword"] ? `\n- PASSWORD PROTECTED!` : ""}
-`}`
-
-                        }
-                    }
-                    catch {
-                        searchstring = "```diff\n- Search failed. Please try again"
-
-                    }
-                    msg.channel.send(searchstring + "```")
-                }
-            }
-            break;
-
-        case "searchmap":
-            var url = "https://northstar.tf/client/servers"
-            var data = await getServers(url)
-
-            if (typeof data == typeof "string") {
-                msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
-            }
-            else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify a search term\`\`\``) }
-            else {
-                if (getMapName(args[1].toLowerCase()) == undefined) {
-                    return msg.channel.send("```diff\n- Please specify a valid map```")
-                }
-                var lobbies = [];
-                for (i = 0; i < data.length; i++) {
-                    if (data[i]["map"].toLowerCase() == (args[1].toLowerCase())) {
-                        lobbies.push(data[i])
-                    }
-                }
-
-                if (lobbies.length == 0) {
-                    msg.channel.send(`\`\`\`diff\n- No servers were found.\`\`\``)
-                }
-                else {
-                    var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 9 ? " - displaying first 10 results" : "."}\n`
-                    try {
-                        for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
-                            searchstring += `
-${lobbies[i]["name"]}
-${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
-${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}${lobbies[i]["hasPassword"] ? `\n- PASSWORD PROTECTED!` : ""}
 `}`
 
                         }
