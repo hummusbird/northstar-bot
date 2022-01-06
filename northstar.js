@@ -58,7 +58,9 @@ const modes = {
     "fastball": "Fastball",
     "arena": "1v1 Arena",
     "ctf_comp": "Capture the Flag",
-    "hs": "Hide and Seek"
+    "hs": "Hide and Seek",
+    "hidden": "The Hidden",
+    "chamber": "One in the Chamber"
 }
 
 function getMapName(name) {
@@ -144,12 +146,7 @@ ${prefix}host                   - links hummusbird's server tutorial
             break;
 
         case "search":
-            var data = await getServers(url)
-
-            if (typeof data == typeof "string") {
-                msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
-            }
-            else if (!args[1]) { msg.channel.send(`\`\`\`diff\n- Please specify title, map or mode.\`\`\``) }
+            if (!args[1]) { return msg.channel.send(`\`\`\`diff\n- Please specify title, map or mode.\`\`\``) }
             else {
                 var search = args[2];
                 var parameter = "name";
@@ -168,6 +165,12 @@ ${prefix}host                   - links hummusbird's server tutorial
 
                 else { search = args[1] }
 
+                var data = await getServers(url)
+
+                if (typeof data == typeof "string") {
+                    return msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
+                }
+
                 var lobbies = [];
                 for (i = 0; i < data.length; i++) {
                     if (data[i][parameter].toLowerCase().includes(search.toLowerCase())) {
@@ -179,7 +182,7 @@ ${prefix}host                   - links hummusbird's server tutorial
                     msg.channel.send(`\`\`\`diff\n- No servers were found.\`\`\``)
                 }
                 else {
-                    var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 9 ? " - displaying first 10 results" : "."}\n`
+                    var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 10 ? " - displaying first 10 results" : "."}\n`
                     try {
                         for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
                             searchstring += `
@@ -251,7 +254,9 @@ kr        - Amped Killrace
 fastball  - Fastball
 arena     - 1v1 Arena
 ctf_comp  - Capture the Flag
-hs        - Hide and Seek\`\`\``)
+hs        - Hide and Seek
+hidden    - The Hidden
+chamber   - One in the Chamber\`\`\``)
             break;
 
         case "host":
