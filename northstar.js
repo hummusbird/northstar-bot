@@ -182,6 +182,8 @@ ${prefix}host                   - links hummusbird's server tutorial
                     msg.channel.send(`\`\`\`diff\n- No servers were found.\`\`\``)
                 }
                 else {
+                    var search_playersOnline = 0;
+                    var search_playerSlots = 0;
                     var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 10 ? " - displaying first 10 results" : "."}\n`
                     try {
                         for (i = 0; i < lobbies.length; i++) {
