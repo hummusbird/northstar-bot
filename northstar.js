@@ -185,6 +185,8 @@ ${prefix}host                   - links hummusbird's server tutorial
                     var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 10 ? " - displaying first 10 results" : "."}\n`
                     try {
                         for (i = 0; i < lobbies.length; i++) {
+                            search_playersOnline += lobbies[i]["playerCount"]
+                            search_playerSlots += lobbies[i]["maxPlayers"]
                             if (i < 10) {searchstring += `
 ${lobbies[i]["name"]}
 ${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
