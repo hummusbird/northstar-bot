@@ -184,20 +184,21 @@ ${prefix}host                   - links hummusbird's server tutorial
                 else {
                     var searchstring = `\`\`\`diff\n+ ${lobbies.length} servers were found${lobbies.length > 10 ? " - displaying first 10 results" : "."}\n`
                     try {
-                        for (i = 0; i < (lobbies.length < 10 ? lobbies.length : 10); i++) {
-                            searchstring += `
+                        for (i = 0; i < lobbies.length; i++) {
+                            if (i < 10) {searchstring += `
 ${lobbies[i]["name"]}
 ${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
 ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}${lobbies[i]["hasPassword"] ? `\n- PASSWORD PROTECTED!` : ""}
 `}`
 
-                        }
+                        }}
                     }
                     catch {
                         searchstring = "```diff\n- Search failed. Please try again"
 
                     }
-                    msg.channel.send(searchstring + "```")
+                    var ratingstring = diff(`\nTotal ${search_playersOnline}/${search_playerSlots} players in "${search}" servers, for:\n\n+ ${search_playersOnline}/${playersOnline} or ${Math.round((search_playersOnline / playersOnline)*10000)/100}% of all NS players\n\n- ${lobbies.length}/${data.length} or ${Math.round((lobbies.length / data.length)*10000)/100}% of all NS servers`)
+                    msg.channel.send((args[args.length -1] == "stats") ? ratingstring : searchstring + "```")
                 }
             }
             break;
