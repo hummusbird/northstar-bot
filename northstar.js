@@ -1,18 +1,86 @@
 const Discord = require('discord.js');
+fs = require('fs')
 const fetch = require('node-fetch')
+const moment = require('moment')
 const client = new Discord.Client();
 require('dotenv').config();
+
+let guildSettings = []
 
 client.login(process.env.BOT_TOKEN)
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setActivity('Northstar.TF', { type: 'PLAYING' })
+
+    let guilds = client.guilds.cache.map(guild => guild);
+    console.log(`The bot is in ${guilds.length} guilds`);
+
+    console.log("\x1b[35m%s\x1b[0m", `Loading guild settings:`)
+    for(let guild of guilds) {
+        let exists = fs.existsSync(`${guild.id}_config.json`)
+        await (exists ? loadConfig(guild) : createConfig(guild))
+    }
 });
 
+client.on('guildCreate', async guild => {
+    console.log("\x1b[32m", `Joined new guild: ${guild.name}`)
+    let exists = fs.existsSync(`${guild.id}_config.json`)
+    await (exists ? loadConfig(guild) : createConfig(guild))
+})
+
+client.on('guildDelete', async guild => {
+    console.log("\x1b[31m", `Kicked from Guild: ${guild.name}`)
+})
+
+// CONFIG FUNCTIONS
+
+async function createConfig(e) {
+    console.log("\x1b[33m%s\x1b[0m",`Guild ${e.name} does not have settings file, Creating....`)
+    
+    var config = {
+        guildID: e.id,
+        prefix: ",",
+    }
+
+    fs.appendFile(`${e.id}_config.json`, JSON.stringify(config), function (err) {
+        if (err) throw err;
+        console.log('Saved!')
+        loadConfig(e)
+    })
+
+}
+
+async function loadConfig(e) {
+    console.log(`loading ${e.name} config file.`)
+    if (guildSettings.find(config => config.guildID == e.id)){
+        var index = guildSettings.indexOf(e)
+        var data = fs.readFileSync(`${e.id}_config.json`, 'utf8')
+        guildSettings[index] = JSON.parse(data)
+        console.log("\x1b[33m%s\x1b[0m",`${e.name} reloaded`)
+    }
+    else {
+        try {
+            var data = fs.readFileSync(`${e.id}_config.json`, 'utf8')
+            guildSettings.push(JSON.parse(data))
+            console.log("\x1b[32m%s\x1b[0m",`${e.name} successfully loaded.`)
+        } 
+        catch(error) {
+            console.log(error);
+            return -1
+        }
+    }
+}
+
+function writeConfig(config, guild){
+    fs.writeFile(`${guild.id}_config.json`, JSON.stringify(config), function (err) {
+        if (err) throw err;
+        console.log(`Saved new config for ${guild.name}`)
+        loadConfig(guild)
+    })
+}
+
 const url = "https://northstar.tf/client/servers"
-const urlR = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
-const prefix = ','
 const maps = {
     "mp_angel_city": "Angel City",
     "mp_black_water_canal": "Black Water Canal",
@@ -96,24 +164,42 @@ async function getServers(url) {
 
 client.on('message', async msg => {
     if (!msg.guild || msg.author.bot) return;
-    if (!msg.content.startsWith(prefix)) return;
+
+    else if (msg.content.includes("<@!925064195186233344>")){
+        client.api.channels[msg.channel.id].messages.post({
+            data: {
+                content: "what",
+                    message_reference: {
+                    message_id: msg.id,
+                    channel_id: msg.channel.id,
+                    guild_id: msg.guild.id
+                }
+            }
+        })
+    }
+
+    const config = guildSettings.find(config => config.guildID == msg.guild.id)
+    if (!msg.content.startsWith(config.prefix)) return;
+
+    
 
     var args = msg.content.split(" ");
     args[0] = args[0].substring(1, args[0].length)
 
     switch (args[0]) {
-
         case "help":
             msg.channel.send(`\`\`\`diff
 + Here are a list of all available commands:
-${prefix}status                 - a general overview of northstar.tf
-${prefix}search title [string]  - searches server titles
-${prefix}search mode [gamemode] - searches all servers running that mode
-${prefix}search map [map]       - searches all servers running that map
-${prefix}convars                - lists some useful ConVars
-${prefix}modes                  - lists all Titanfall 2 gamemodes
-${prefix}maps                   - lists all Titanfall 2 maps
-${prefix}host                   - links hummusbird's server tutorial
+${config.prefix}status                 - a general overview of northstar.tf
+${config.prefix}search title [string]  - searches server titles
+${config.prefix}search mode [gamemode] - searches all servers running that mode
+${config.prefix}search map [map]       - searches all servers running that map
+${config.prefix}convars                - lists some useful ConVars
+${config.prefix}modes                  - lists all Titanfall 2 gamemodes
+${config.prefix}maps                   - lists all Titanfall 2 maps
+${config.prefix}host                   - links hummusbird's server tutorial
+${config.prefix}git                    - links the github
+${config.prefix}wiki                   - links the wiki
 \`\`\``)
 
             break;
@@ -190,7 +276,7 @@ ${prefix}host                   - links hummusbird's server tutorial
                             search_playersOnline += lobbies[i]["playerCount"]
                             search_playerSlots += lobbies[i]["maxPlayers"]
                             if (i < 10) {searchstring += `
-${lobbies[i]["name"]}
+${lobbies[i]["name"].replaceAll('`','')}
 ${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
 ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}${lobbies[i]["hasPassword"] ? `\n- PASSWORD PROTECTED!` : ""}
 `}`
@@ -207,6 +293,22 @@ ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${
             }
             break;
 
+        case "prefix":
+            if (!msg.member.hasPermission("ADMINISTRATOR")) { return msg.channel.send("```diff\n- no <3```")}
+            var msgArray = msg.content.split(" ");
+            if (!msgArray[1]) {msg.channel.send(`\`\`\`Current Prefix is '${config.prefix}'\`\`\``)}
+            else {
+                config.prefix = msgArray[1]
+                writeConfig(config, msg.guild)
+                msg.channel.send(`\`\`\`diff\n+ Prefix changed to '${config.prefix}'\`\`\``)
+            }
+            break;
+
+        case "uptime":
+            var time = moment.duration(moment().diff(msg.client.readyAt))
+            msg.channel.send(`This bot has been up for ${time.days()} days, ${time.hours()} hours, ${time.minutes()} minutes and ${time.seconds()} seconds`)
+            break;
+        
         case "maps":
         case "map":
             msg.channel.send(`\`\`\`diff\n+ Titanfall 2 Maps:
@@ -268,6 +370,15 @@ chamber   - One in the Chamber\`\`\``)
         case "birb":
         case "vid":
             msg.channel.send("https://youtu.be/EZ3w2Nl9SZo")
+            break;
+
+        case "wiki":
+            msg.channel.send("https://r2northstar.gitbook.io/r2northstar-wiki/")
+            break;
+        
+        case "git":
+        case "github":
+            msg.channel.send("https://github.com/R2Northstar")
             break;
 
         case "convars":
