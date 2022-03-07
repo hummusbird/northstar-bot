@@ -179,9 +179,8 @@ client.on('message', async msg => {
     }
 
     const config = guildSettings.find(config => config.guildID == msg.guild.id)
-    if (!msg.content.startsWith(config.prefix)) return;
 
-    
+    if (!msg.content.startsWith(config.prefix)) return;
 
     var args = msg.content.split(" ");
     args[0] = args[0].substring(1, args[0].length)
@@ -283,10 +282,11 @@ ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${
 
                         }}
                     }
-                    catch {
+                    catch (e) {
                         searchstring = "```diff\n- Search failed. Please try again"
-
+                        console.log(e)
                     }
+                    
                     var ratingstring = `\`\`\`diff\n\nTotal ${search_playersOnline}/${search_playerSlots} players in "${search}" servers, for:\n\n+ ${search_playersOnline}/${playersOnline} or ${Math.round((search_playersOnline / playersOnline)*10000)/100}% of all NS players\n\n- ${lobbies.length}/${data.length} or ${Math.round((lobbies.length / data.length)*10000)/100}% of all NS servers\`\`\``
                     msg.channel.send((args[args.length -1] == "stats") ? ratingstring : searchstring + "```")
                 }
@@ -295,10 +295,10 @@ ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${
 
         case "prefix":
             if (!msg.member.hasPermission("ADMINISTRATOR")) { return msg.channel.send("```diff\n- no <3```")}
-            var msgArray = msg.content.split(" ");
-            if (!msgArray[1]) {msg.channel.send(`\`\`\`Current Prefix is '${config.prefix}'\`\`\``)}
+
+            if (!args[1]) {msg.channel.send(`\`\`\`Current Prefix is '${config.prefix}'\`\`\``)}
             else {
-                config.prefix = msgArray[1]
+                config.prefix = args[1]
                 writeConfig(config, msg.guild)
                 msg.channel.send(`\`\`\`diff\n+ Prefix changed to '${config.prefix}'\`\`\``)
             }
