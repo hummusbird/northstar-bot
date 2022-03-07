@@ -275,7 +275,7 @@ ${config.prefix}wiki                   - links the wiki
                             search_playersOnline += lobbies[i]["playerCount"]
                             search_playerSlots += lobbies[i]["maxPlayers"]
                             if (i < 10) {searchstring += `
-${lobbies[i]["name"].replaceAll('`','')}
+${lobbies[i]["name"].replace(/`/g,'')}
 ${lobbies[i]["playerCount"] == lobbies[i]["maxPlayers"] ? "-" : "+"} ${lobbies[i]["playerCount"]}/${lobbies[i]["maxPlayers"]} players connected
 ${lobbies[i]["map"] == "mp_lobby" ? "- Currently in the lobby\n" : `+ Playing ${getGamemode(lobbies[i]["playlist"])} on ${getMapName(lobbies[i]["map"])}${lobbies[i]["hasPassword"] ? `\n- PASSWORD PROTECTED!` : ""}
 `}`
