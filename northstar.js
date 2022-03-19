@@ -220,11 +220,12 @@ ${config.prefix}wiki                   - links the wiki
                     playersOnline += hasPwd ? 0 : (data[i]["playerCount"] == undefined ? 0 : data[i]["playerCount"]);
                     playerSlots += hasPwd ? 0 : data[i]["maxPlayers"];
                 }
+                var percentage = playerSlots > 0 ? Math.round((playersOnline / playerSlots) * 100) : 0;
                 msg.channel.send(`\`\`\`diff\n
 ## NORTHSTAR.TF STATUS: ##\n
 + Servers Online: ${data.length}\n
 - Password Protected Servers: ${protectedLobbies}\n
-+ Players in-game: ${playersOnline}/${playerSlots} (${Math.round((playersOnline / playerSlots) * 100)}%)
++ Players in-game: ${playersOnline}/${playerSlots} (${percentage}%)
 \`\`\``)
             }
 
