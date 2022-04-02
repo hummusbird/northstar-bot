@@ -110,6 +110,8 @@ const maps = {
 
 const modes = {
     "tdm": "Skirmish",
+    "aitdm": "Attrition",
+    "sns": "Sticks and Stones",
     "cp": "Amped Hardpoint",
     "ctf": "Capture the Flag",
     "lts": "Last Titan Standing",
@@ -346,6 +348,8 @@ mp_coliseum_column   - Pillars\`\`\``)
         case "gamemode":
             msg.channel.send(`\`\`\`diff\n+ Titanfall 2 Gamemodes:
 tdm       - Skirmish
+aitdm     - Attrition
+sns       - Sticks and Stones
 cp        - Amped Hardpoint
 ctf       - Capture the Flag
 lts       - Last Titan Standing
