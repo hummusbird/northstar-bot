@@ -209,7 +209,7 @@ ${config.prefix}wiki                   - links the wiki
             var data = await getServers(url)
 
             if (typeof data == typeof "string") {
-                msg.channel.send(`\`\`\`diff\n- ${data}\`\`\``)
+                msg.channel.send("https://media.discordapp.net/attachments/891428299430043708/955612322427191296/motivate.gif")
             }
             else {
                 var playersOnline = 0;
