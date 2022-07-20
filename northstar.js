@@ -1,13 +1,20 @@
 const Discord = require('discord.js');
+require('discord-reply');
 fs = require('fs')
 const fetch = require('node-fetch')
-const moment = require('moment')
+const moment = require('moment');
+const { mkdirSync } = require('fs');
 const client = new Discord.Client();
 require('dotenv').config();
 
 let guildSettings = []
 
-client.login(process.env.BOT_TOKEN)
+let [arg] = process.argv.slice(2);
+let token = process.env.BOT_TOKEN;
+if (arg == "--dev") { token = process.env.DEV_TOKEN }
+client.login(token);
+
+let delay = ms => new Promise(res => setTimeout(res, ms));
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -167,17 +174,18 @@ async function getServers(url) {
 client.on('message', async msg => {
     if (!msg.guild || msg.author.bot) return;
 
-    else if (msg.content.includes("<@!925064195186233344>")){
-        client.api.channels[msg.channel.id].messages.post({
-            data: {
-                content: "what",
-                    message_reference: {
-                    message_id: msg.id,
-                    channel_id: msg.channel.id,
-                    guild_id: msg.guild.id
-                }
-            }
+    else if (msg.content.includes("<@925064195186233344>")){
+        msg.lineReply('what')    
+    }
+
+    if (msg.content == "/redeem"){
+        num = Math.floor(Math.random() * (250 - 50 + 1)) + 50;
+        msg.lineReply(`\`\`\`diff\n+${num} TitanCoins\`\`\``)
+        .then(msg => {
+            setTimeout(() => msg.delete(), 5000)
         })
+        await delay(5000)
+        msg.delete();
     }
 
     const config = guildSettings.find(config => config.guildID == msg.guild.id)
