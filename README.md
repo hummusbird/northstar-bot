@@ -1,19 +1,31 @@
-# northstar-bot
+# northstar_servers_bot
 
-+ Here are a list of all available commands:
++ Here is a list of all available commands using the default prefix:
+```
+,help                   - displays these commands
 
-${prefix}status                 - a general overview of northstar.tf
+,prefix [prefix]        - allows an admin to set the prefix
 
-${prefix}search title [string]  - searches server titles
+,status                 - a general overview of northstar.tf
 
-${prefix}search mode [gamemode] - searches all servers running that mode
+,search title [string]  - searches server titles
 
-${prefix}search map [map]       - searches all servers running that map
+,search mode [gamemode] - searches all servers running that mode
 
-${prefix}convars                - lists some useful ConVars
+,search map [map]       - searches all servers running that map
 
-${prefix}modes                  - lists all Titanfall 2 gamemodes
+,playlistvars           - lists playlist variables
 
-${prefix}maps                   - lists all Titanfall 2 maps
+,modes                  - lists all Titanfall 2 gamemodes
 
-${prefix}host                   - links hummusbird's server tutorial
+,maps                   - lists all Titanfall 2 maps
+
+,host                   - link to hummusbird's server tutorial
+
+,wiki                   - link to the Northstar Wiki
+
+,github                 - link to the Northstar Github 
+
+,info                   - displays information about the bot
+
+```
