@@ -1,0 +1,20 @@
+[package]
+name = "northstar_servers_bot"
+version = "1.0.0"
+authors = ["H0l0","Hummusbirb"]
+edition = "2021"
+
+[dependencies]
+dotenv = "0.15"
+serde_json = "1.0.82"
+rand = "0.8.5"
+reqwest = { version = "0.11.11", features = ["json", "stream"]}
+rusqlite = { version = "0.28.0", features = ["bundled"] }
+
+[dependencies.tokio]
+version = "1.0"
+features = ["macros", "signal", "rt-multi-thread"]
+
+[dependencies.serenity]
+version = "0.11"
+features = ["cache", "framework", "standard_framework", "rustls_backend"]
