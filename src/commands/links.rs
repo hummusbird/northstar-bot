@@ -37,14 +37,14 @@ async fn info(ctx: &Context, msg: &Message) -> CommandResult {
             m.content("").embed(|e| {
                 e.title("Northstar Servers Bot")
                     .description(
-"Made by hummusbirb
+"Made by hummusbird
 Remade in Rust by H0L0
 
 A discord bot that displays that status of the northstar.tf servers
 
 ",
                     )
-                    .field("hummusbirb", "https://birb.cc", false)
+                    .field("hummusbird", "https://birb.cc", false)
                     .field("H0L0", "https://h0l0.cc", false)
                     .colour(Colour::from_rgb(244, 32, 105))
                     .thumbnail("https://northstar.tf/assets/logo_1k.png")
