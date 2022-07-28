@@ -48,7 +48,7 @@ A discord bot that displays that status of the northstar.tf servers
                     .field("H0L0", "https://h0l0.cc", false)
                     .colour(Colour::from_rgb(244, 32, 105))
                     .thumbnail("https://northstar.tf/assets/logo_1k.png")
-                    .url("https://northstar.tf")
+                    .url("https://github.com/hummusbird/northstar-bot")
             })
         })
         .await?;
