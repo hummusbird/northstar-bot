@@ -59,12 +59,12 @@ pub fn check_db_prefix(guild_id: Option<GuildId>) -> Option<String> {
     {
         mut stmt => {
             let mut rows = stmt.query(()).unwrap();
-            let mut names: Vec<String> = Vec::new();
+            let mut ids: Vec<String> = Vec::new();
 
             while let Some(row) = rows.next().unwrap() {
-                names.push(row.get(0).unwrap());
+                ids.push(row.get(0).unwrap());
             }
-            return Some(names[0].to_string());
+            return Some(ids[0].to_string());
         }
     }
 }
@@ -86,13 +86,13 @@ pub async fn new_server_reg(guild_id: u64) -> Result<(), Error> {
     {
         mut stmt => {
             let mut rows = stmt.query(()).unwrap();
-            let mut names: Vec<usize> = Vec::new();
+            let mut ids: Vec<String> = Vec::new();
 
             while let Some(row) = rows.next().unwrap() {
-                names.push(row.get(0).unwrap());
+                ids.push(row.get(0).unwrap());
             }
 
-            if names.is_empty() == true {
+            if ids.is_empty() == true {
                 let new_server = Server {
                     id: guild_id,
                     prefix: DEFAULTPREFIX.to_string(),
