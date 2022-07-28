@@ -52,7 +52,7 @@ pub fn check_db_prefix(guild_id: Option<GuildId>) -> Option<String> {
 
     match conn
         .prepare(
-            &("SELECT prefix FROM Servers WHERE id LIKE ".to_owned()
+            &("SELECT prefix FROM Servers WHERE id = ".to_owned()
                 + &guild_id.unwrap().as_u64().to_string()),
         )
         .expect("fail")
@@ -74,14 +74,14 @@ pub async fn new_server_reg(guild_id: u64) -> Result<(), Error> {
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS Servers (
-             id integer null unique,
+             id text null unique,
              prefix text not null 
          )",
         (),
     )?;
 
     match conn
-        .prepare(&("SELECT id FROM Servers WHERE id LIKE ".to_owned() + &guild_id.to_string()))
+        .prepare(&("SELECT id FROM Servers WHERE id = ".to_owned() + &guild_id.to_string()))
         .expect("fail")
     {
         mut stmt => {
