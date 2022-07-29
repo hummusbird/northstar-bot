@@ -1,4 +1,8 @@
-# northstar_servers_bot
+# northstar bot
+
+Written in JS by hummusbird
+
+Rewritten in rust by H0L0
 
 + Here is a list of all available commands using the default prefix:
 ```
