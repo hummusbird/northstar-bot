@@ -310,6 +310,7 @@ pub fn get_playlist_name(name: &str) -> Option<&str> {
         ("coliseum", "Coliseum"),
         ("cp", "Amped Hardpoint"),
         ("ctf", "Capture the Flag"),
+        ("fd", "Frontier Defense")
         ("fd_easy", "Frontier Defense (Easy)"),
         ("fd_normal", "Frontier Defense (Regular)"),
         ("fd_hard", "Frontier Defense (Hard)"),
