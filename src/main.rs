@@ -84,6 +84,7 @@ async fn main() {
 
     let mut framework = StandardFramework::new().configure(|c| {
         c.dynamic_prefix(|_, msg| Box::pin(async move { check_db_prefix(msg.guild_id) }))
+            .prefix("")
     });
 
     framework.group_add(&GENERAL_GROUP);
