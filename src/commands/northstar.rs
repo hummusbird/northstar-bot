@@ -304,6 +304,7 @@ pub fn get_map_name(name: &str) -> Option<&str> {
 
 pub fn get_playlist_name(name: &str) -> Option<&str> {
     let modes = HashMap::from([
+        ("private_match", "Private Match"),
         //vanilla
         ("aitdm", "Attrition"),
         ("at", "Bounty Hunt"),
