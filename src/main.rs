@@ -1,12 +1,13 @@
-use serenity::model::prelude::Guild;
 use std::env;
 
 use serenity::async_trait;
 use serenity::framework::standard::macros::group;
 use serenity::framework::standard::StandardFramework;
+use serenity::model::application::command::Command;
+use serenity::model::application::interaction::{Interaction, InteractionResponseType};
 use serenity::model::channel::Message;
-use serenity::model::gateway::Activity;
-use serenity::model::gateway::Ready;
+use serenity::model::gateway::{Activity, Ready};
+use serenity::model::prelude::Guild;
 use serenity::model::user::OnlineStatus;
 use serenity::prelude::*;
 
@@ -43,13 +44,19 @@ impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("Connected as {}", ready.user.name);
         let guilds = ctx.cache.guilds().len();
-
         println!("The bot is in {} guilds", guilds);
+        let _guild_command = Command::create_global_application_command(&ctx.http, |command| {
+            commands::titancoins::register(command)
+        })
+        .await;
+
         set_activity(ctx).await;
     }
+
     async fn guild_create(&self, _ctx: Context, guild: Guild, _is_new: bool) {
         new_server_reg(*guild.id.as_u64()).await.expect("fuck");
     }
+
     async fn message(&self, ctx: Context, msg: Message) {
         if msg.content == "/redeem" {
             if let Err(why) = redeem(&ctx, &msg).await {
@@ -59,6 +66,27 @@ impl EventHandler for Handler {
         if msg.content.contains("<@925064195186233344>") {
             if let Err(why) = msg.reply_ping(ctx, "what").await {
                 println!("Error sending message: {:?}", why);
+            }
+        }
+    }
+
+    async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
+        if let Interaction::ApplicationCommand(command) = interaction {
+
+            let content = match command.data.name.as_str() {
+                "redeem" => commands::titancoins::run(&command.data.options),
+                _ => ":(".to_string(),
+            };
+
+            if let Err(why) = command
+                .create_interaction_response(&ctx.http, |response| {
+                    response
+                        .kind(InteractionResponseType::ChannelMessageWithSource)
+                        .interaction_response_data(|message| message.content(content))
+                })
+                .await
+            {
+                println!("Cannot respond to slash command: {}", why);
             }
         }
     }

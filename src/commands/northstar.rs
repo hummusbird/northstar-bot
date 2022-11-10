@@ -251,7 +251,10 @@ async fn search(ctx: &Context, msg: &Message) -> CommandResult {
             Ok(())
         }
         Err(_) => {
-            msg.channel_id.say(ctx,"```diff\n- Well fuck! There seems to be a problem```").await.unwrap();
+            msg.channel_id
+                .say(ctx, "```diff\n- Well fuck! There seems to be a problem```")
+                .await
+                .unwrap();
             panic!("oh nyo it failed")
         }
     }
