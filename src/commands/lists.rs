@@ -137,6 +137,7 @@ kr                  -Amped Killrace
 sns                 -Sticks and Stones
 tffa                -Titan FFA
 tt                  -Titan Tag
+fw                  -Frontier War
 + Northstar.Coop
 sp_coop             -Singleplayer Coop```",
         )

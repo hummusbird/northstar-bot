@@ -351,6 +351,7 @@ pub fn get_playlist_name(name: &str) -> Option<&str> {
         ("sns", "Sticks and Stones"),
         ("tffa", "Titan FFA"),
         ("tt", "Titan Tag"),
+        ("fw", "Frontier War"),
         //northstar coop
         ("sp_coop", "Singleplayer Coop"),
     ]);
