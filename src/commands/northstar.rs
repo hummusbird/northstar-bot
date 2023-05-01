@@ -160,7 +160,13 @@ async fn search(ctx: &Context, msg: &Message) -> CommandResult {
                         .to_ascii_lowercase()
                         .contains(&search.to_ascii_lowercase())
                     {
-                        lobbies.push(json.get(i).unwrap())
+                        if searchtype == "playlist"{
+                            if !jsonsearch.unwrap().to_string().to_ascii_lowercase().contains("private_match") || args[2] == "private_match"{
+                                lobbies.push(json.get(i).unwrap())
+                            } 
+                        } else{
+                            lobbies.push(json.get(i).unwrap())
+                        }
                     }
                 }
                 if lobbies.len() == 0 {
