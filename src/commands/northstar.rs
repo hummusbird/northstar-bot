@@ -83,7 +83,7 @@ async fn status(ctx: &Context, msg: &Message) -> CommandResult {
 
 async fn northstar_server_json() -> Result<Response, reqwest::Error> {
     let client = reqwest::Client::builder().build().unwrap();
-    let url = MS.to_owned() + &"/client/servers".to_string();
+    let url = MS.to_owned() + "/client/servers";
     let res = client
         .get(url)
         .header(
@@ -141,6 +141,15 @@ async fn search(ctx: &Context, msg: &Message) -> CommandResult {
                         }
                         searchtype = "name";
                     }
+                    "region" => {
+                        if args.len() != 3 || args[2] == " " {
+                            msg.channel_id
+                                .say(ctx, "```diff\n- Please specify a search term.```")
+                                .await?;
+                            panic!("Not valid search term");
+                        }
+                        searchtype = "region";
+                    }
                     _ => {
                         search = args[1];
                     }
@@ -152,19 +161,25 @@ async fn search(ctx: &Context, msg: &Message) -> CommandResult {
                 let mut lobbies: Vec<&serde_json::Value> = [].to_vec();
                 for i in 0..json.as_array().unwrap().len() {
                     let jsonsearch = json.get(i).and_then(|value| value.get(searchtype));
-
-                    if jsonsearch
-                        .unwrap()
-                        .to_string()
-                        .replace('"', "")
-                        .to_ascii_lowercase()
-                        .contains(&search.to_ascii_lowercase())
+                    if jsonsearch.is_some()
+                        && jsonsearch
+                            .unwrap()
+                            .to_string()
+                            .replace('"', "")
+                            .to_ascii_lowercase()
+                            .contains(&search.to_ascii_lowercase())
                     {
-                        if searchtype == "playlist"{
-                            if !jsonsearch.unwrap().to_string().to_ascii_lowercase().contains("private_match") || args[2] == "private_match"{
+                        if searchtype == "playlist" {
+                            if !jsonsearch
+                                .unwrap()
+                                .to_string()
+                                .to_ascii_lowercase()
+                                .contains("private_match")
+                                || args[2] == "private_match"
+                            {
                                 lobbies.push(json.get(i).unwrap())
-                            } 
-                        } else{
+                            }
+                        } else {
                             lobbies.push(json.get(i).unwrap())
                         }
                     }
