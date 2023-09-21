@@ -4,32 +4,28 @@ Written in JS by hummusbird
 
 Rewritten in rust by H0L0
 
-+ Here is a list of all available commands using the default prefix:
+Rewritten (again) in Go by cyrv6737
+
++ Here is a list of all available slash commands:
 ```
-,help                   - displays these commands
+status                 - a general overview of northstar.tf
 
-,prefix [prefix]        - allows an admin to set the prefix
+search region [region] - searches server regions
 
-,status                 - a general overview of northstar.tf
+search name [string]   - searches server titles
 
-,search title [string]  - searches server titles
+search mode [gamemode] - searches all servers running that mode
 
-,search mode [gamemode] - searches all servers running that mode
+search map [map]       - searches all servers running that map
 
-,search map [map]       - searches all servers running that map
+playlistvars           - lists playlist variables
 
-,playlistvars           - lists playlist variables
+modes                  - lists all Titanfall 2 gamemodes
 
-,modes                  - lists all Titanfall 2 gamemodes
+maps                   - lists all Titanfall 2 maps
 
-,maps                   - lists all Titanfall 2 maps
+link [url]             - sends specified URL
 
-,host                   - link to hummusbird's server tutorial
-
-,wiki                   - link to the Northstar Wiki
-
-,github                 - link to the Northstar Github 
-
-,info                   - displays information about the bot
+info                   - displays information about the bot
 
 ```
