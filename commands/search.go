@@ -217,18 +217,33 @@ func createSearchMessage(i *discordgo.InteractionCreate) string {
 
 	messageString = messageString + fmt.Sprintf("\n+ %d servers were found - Showing up to %d results", len(data), maxResults)
 
-	for index, result := range data {
-		if index < maxResults {
-			messageString = messageString + fmt.Sprintf("\n\n%s\n+ %d / %d players connected\n+ Playing %s on %s", result.Name, result.Players, result.MaxPlayers, result.Playlist, result.Map)
-			if result.HasPassword {
-				messageString = messageString + "\n- PASSWORD PROTECTED"
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for index, result := range data {
+			if index < maxResults {
+				messageString = messageString + fmt.Sprintf("\n\n%s\n+ %d / %d players connected\n+ Playing %s on %s", result.Name, result.Players, result.MaxPlayers, matchInternalName(result.Playlist, util.Playlists), matchInternalName(result.Map, util.Maps))
+				if result.HasPassword {
+					messageString = messageString + "\n- PASSWORD PROTECTED"
+				}
 			}
 		}
-	}
+	}()
+	wg.Wait()
 
 	messageString = messageString + "\n```"
 
 	return messageString
+}
+
+func matchInternalName(n string, r []util.R2List) string {
+	for _, name := range r {
+		if name.Name == n {
+			return name.ReadableName
+		}
+	}
+
+	return ""
 }
 
 func SearchHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -242,6 +257,10 @@ func SearchHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 func LegacySearchHandler(s *discordgo.Session, m *discordgo.MessageCreate, c string) {
 
+	if c == ".search" {
+		return
+	}
+
 	cmdParts := strings.Fields(c)
 	cmdMode := cmdParts[1]
 	cmdContext := strings.Join(cmdParts[2:], " ")
@@ -250,6 +269,7 @@ func LegacySearchHandler(s *discordgo.Session, m *discordgo.MessageCreate, c str
 		messageString = "```Diff"
 		data          []util.ServerInfo
 		wg            sync.WaitGroup
+		badSearch     = false
 	)
 
 	data = util.ProcessAPIResp()
@@ -285,27 +305,46 @@ func LegacySearchHandler(s *discordgo.Session, m *discordgo.MessageCreate, c str
 			}
 		} else if cmdMode != "" {
 			for i := len(data) - 1; i >= 0; i-- {
-				if strings.Contains(strings.ToLower(data[i].Playlist), strings.ToLower(cmdContext)) {
-					continue
+				if cmdContext != "" {
+					if strings.Contains(strings.ToLower(data[i].Name), strings.ToLower(cmdMode+" "+cmdContext)) {
+						continue
+					} else {
+						data = append(data[:i], data[i+1:]...)
+					}
 				} else {
-					data = append(data[:i], data[i+1:]...)
+					if strings.Contains(strings.ToLower(data[i].Name), strings.ToLower(cmdMode)) {
+						continue
+					} else {
+						data = append(data[:i], data[i+1:]...)
+					}
 				}
 			}
+		} else {
+			badSearch = true
 		}
 	}()
 
 	wg.Wait()
 
+	if badSearch {
+		return
+	}
+
 	messageString = messageString + fmt.Sprintf("\n+ %d servers were found - Showing up to %d results", len(data), maxResults)
 
-	for index, result := range data {
-		if index < maxResults {
-			messageString = messageString + fmt.Sprintf("\n\n%s\n+ %d / %d players connected\n+ Playing %s on %s", result.Name, result.Players, result.MaxPlayers, result.Playlist, result.Map)
-			if result.HasPassword {
-				messageString = messageString + "\n- PASSWORD PROTECTED"
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for index, result := range data {
+			if index < maxResults {
+				messageString = messageString + fmt.Sprintf("\n\n%s\n+ %d / %d players connected\n+ Playing %s on %s", result.Name, result.Players, result.MaxPlayers, matchInternalName(result.Playlist, util.Playlists), matchInternalName(result.Map, util.Maps))
+				if result.HasPassword {
+					messageString = messageString + "\n- PASSWORD PROTECTED"
+				}
 			}
 		}
-	}
+	}()
+	wg.Wait()
 
 	messageString = messageString + "\n```"
 
