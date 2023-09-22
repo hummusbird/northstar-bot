@@ -21,3 +21,11 @@ func RedeemHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 
 }
+
+// Prefix command handler
+func LegacyRedeemHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	c := r.Intn(201) + 50
+
+	s.ChannelMessageSendReply(m.ChannelID, fmt.Sprintf("```Diff\n+%d ScorchBucks\n```", c), m.Reference())
+}

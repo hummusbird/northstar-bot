@@ -53,3 +53,10 @@ func StatusHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	})
 
 }
+
+// Prefix command handler
+func LegacyStatusHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+	s.ChannelMessageSendReply(m.ChannelID, createStatusString(), m.Reference())
+
+}
