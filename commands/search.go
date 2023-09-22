@@ -239,3 +239,75 @@ func SearchHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 	})
 }
+
+func LegacySearchHandler(s *discordgo.Session, m *discordgo.MessageCreate, c string) {
+
+	cmdParts := strings.Fields(c)
+	cmdMode := cmdParts[1]
+	cmdContext := strings.Join(cmdParts[2:], " ")
+
+	var (
+		messageString = "```Diff"
+		data          []util.ServerInfo
+		wg            sync.WaitGroup
+	)
+
+	data = util.ProcessAPIResp()
+
+	sort.SliceStable(data, func(i, j int) bool {
+		return data[i].Players > data[j].Players
+	})
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if cmdMode == "title" {
+			for i := len(data) - 1; i >= 0; i-- {
+				if strings.Contains(strings.ToLower(data[i].Name), strings.ToLower(cmdContext)) {
+					continue
+				} else {
+					data = append(data[:i], data[i+1:]...)
+				}
+			}
+		} else if cmdMode == "mode" {
+			for i := len(data) - 1; i >= 0; i-- {
+				if data[i].Playlist != cmdContext {
+					data = append(data[:i], data[i+1:]...)
+				}
+			}
+		} else if cmdMode == "map" {
+			for i := len(data) - 1; i >= 0; i-- {
+				if strings.Contains(strings.ToLower(data[i].Map), strings.ToLower(cmdContext)) {
+					continue
+				} else {
+					data = append(data[:i], data[i+1:]...)
+				}
+			}
+		} else if cmdMode != "" {
+			for i := len(data) - 1; i >= 0; i-- {
+				if strings.Contains(strings.ToLower(data[i].Playlist), strings.ToLower(cmdContext)) {
+					continue
+				} else {
+					data = append(data[:i], data[i+1:]...)
+				}
+			}
+		}
+	}()
+
+	wg.Wait()
+
+	messageString = messageString + fmt.Sprintf("\n+ %d servers were found - Showing up to %d results", len(data), maxResults)
+
+	for index, result := range data {
+		if index < maxResults {
+			messageString = messageString + fmt.Sprintf("\n\n%s\n+ %d / %d players connected\n+ Playing %s on %s", result.Name, result.Players, result.MaxPlayers, result.Playlist, result.Map)
+			if result.HasPassword {
+				messageString = messageString + "\n- PASSWORD PROTECTED"
+			}
+		}
+	}
+
+	messageString = messageString + "\n```"
+
+	s.ChannelMessageSendReply(m.ChannelID, messageString, m.Reference())
+}

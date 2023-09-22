@@ -25,7 +25,7 @@ var (
 			},
 		},
 	}
-	allModesString = "```Diff\n" +
+	AllModesString = "```Diff\n" +
 		"+ Vanilla\n" +
 		"aitdm               -Attrition\n" +
 		"at                  -Bounty Hunt\n" +
@@ -68,7 +68,7 @@ var (
 		"fw                  -Frontier War\n" +
 		"+ Northstar.Coop\n" +
 		"sp_coop             -Singleplayer Coop```"
-	allMapsString = "```Diff\n" +
+	AllMapsString = "```Diff\n" +
 		"+ Multiplayer Maps\n" +
 		"mp_angel_city        - Angel City\n" +
 		"mp_black_water_canal - Black Water Canal\n" +
@@ -109,7 +109,7 @@ var (
 		"sp_tday              -Trial by Fire\n" +
 		"sp_s2s               -The Ark\n" +
 		"sp_skyway_v1         -The Fold Weapon```\n"
-	allPlaylistVarString = "```Diff\n" +
+	AllPlaylistVarString = "```Diff\n" +
 		"+ Playlist Vars\n" +
 		"custom_air_accel_pilot\n" +
 		"pilot_health_multiplier\n" +
@@ -164,11 +164,11 @@ func ListCmdHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	o := i.ApplicationCommandData().Options[0].StringValue()
 
 	if o == "maps" {
-		sendString = allMapsString
+		sendString = AllMapsString
 	} else if o == "modes" {
-		sendString = allModesString
+		sendString = AllModesString
 	} else if o == "playlistvars" {
-		sendString = allPlaylistVarString
+		sendString = AllPlaylistVarString
 	}
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{

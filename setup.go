@@ -3,8 +3,7 @@ package main
 import (
 	"log"
 	"northstar-bot/commands"
-	"northstar-bot/legacy"
-	"northstar-bot/util"
+	"northstar-bot/messages"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -96,8 +95,7 @@ func setupAllHandlers(s *discordgo.Session) {
 		}
 	})
 
-	s.AddHandler(util.MessageCreateHandler)
-	s.AddHandler(legacy.PrefixCommandHandler)
+	s.AddHandler(messages.MessageCreateHandler)
 
 	log.Println("[INFO] All handlers attached")
 }
