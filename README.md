@@ -6,26 +6,53 @@ Rewritten in rust by H0L0
 
 Rewritten (again) in Go by cyrv6737
 
++ Usage
+Use a file called `bot.env` next to the bot binary with the following:
+```
+TOKEN=<discord token here>
+PREFIX=<whatever prefix>
+```
+
 + Here is a list of all available slash commands:
 ```
 status                 - a general overview of northstar.tf
 
-search region [region] - searches server regions
+search                 - search northstar servers in various ways
 
-search name [string]   - searches server titles
+list                   - displays various useful lists
 
-search mode [gamemode] - searches all servers running that mode
-
-search map [map]       - searches all servers running that map
-
-playlistvars           - lists playlist variables
-
-modes                  - lists all Titanfall 2 gamemodes
-
-maps                   - lists all Titanfall 2 maps
-
-link [url]             - sends specified URL
+link                   - sends various useful links
 
 info                   - displays information about the bot
+
+redeem                 - redeem scorchbucks
+
+```
+
++ Here is a list of all available commands using the default prefix:
+```
+,help                   - displays these commands
+
+,status                 - a general overview of northstar.tf
+
+,search title [string]  - searches server titles
+
+,search mode [gamemode] - searches all servers running that mode
+
+,search map [map]       - searches all servers running that map
+
+,playlistvars           - lists playlist variables
+
+,modes                  - lists all Titanfall 2 gamemodes
+
+,maps                   - lists all Titanfall 2 maps
+
+,host                   - link to hummusbird's server tutorial
+
+,wiki                   - link to the Northstar Wiki
+
+,github                 - link to the Northstar Github 
+
+,info                   - displays information about the bot
 
 ```
