@@ -10,8 +10,8 @@ import (
 
 func RedeemHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
-	rand.Seed(time.Now().UnixNano())
-	c := rand.Intn(201) + 50
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	c := r.Intn(201) + 50
 
 	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
