@@ -7,6 +7,7 @@ Rewritten in rust by H0L0
 Rewritten (again) in Go by cyrv6737
 
 + Usage
+
 Use a file called `bot.env` next to the bot binary with the following:
 ```
 TOKEN=<discord token here>
