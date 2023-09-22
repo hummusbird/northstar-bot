@@ -28,7 +28,7 @@ var (
 					Value: "US West",
 				},
 				{
-					Name:  "US_Central",
+					Name:  "US Central",
 					Value: "US Central",
 				},
 				{
