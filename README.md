@@ -4,11 +4,34 @@ Written in JS by hummusbird
 
 Rewritten in rust by H0L0
 
-+ Here is a list of all available commands using the default prefix:
+Rewritten (again) in Go by cyrv6737
+
+## Usage
+
+Use a file called `bot.env` next to the bot binary with the following:
+```
+TOKEN=<discord token here>
+PREFIX=<whatever prefix>
+```
+
+## Slash Commands
+```
+status                 - a general overview of northstar.tf
+
+search                 - search northstar servers in various ways
+
+list                   - displays various useful lists
+
+link                   - sends various useful links
+
+info                   - displays information about the bot
+
+redeem                 - redeem scorchbucks
+```
+
+## Prefix Commands
 ```
 ,help                   - displays these commands
-
-,prefix [prefix]        - allows an admin to set the prefix
 
 ,status                 - a general overview of northstar.tf
 
