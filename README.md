@@ -6,7 +6,7 @@ Rewritten in rust by H0L0
 
 Rewritten (again) in Go by cyrv6737
 
-+ Usage
+## Usage
 
 Use a file called `bot.env` next to the bot binary with the following:
 ```
@@ -14,7 +14,7 @@ TOKEN=<discord token here>
 PREFIX=<whatever prefix>
 ```
 
-+ Here is a list of all available slash commands:
+## Slash Commands
 ```
 status                 - a general overview of northstar.tf
 
@@ -27,10 +27,9 @@ link                   - sends various useful links
 info                   - displays information about the bot
 
 redeem                 - redeem scorchbucks
-
 ```
 
-+ Here is a list of all available commands using the default prefix:
+## Prefix Commands
 ```
 ,help                   - displays these commands
 
@@ -56,4 +55,5 @@ redeem                 - redeem scorchbucks
 
 ,info                   - displays information about the bot
 
+,redeem                 - redeem scorchbucks
 ```
