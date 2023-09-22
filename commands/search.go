@@ -5,6 +5,7 @@ import (
 	"northstar-bot/util"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -145,6 +146,7 @@ func createSearchMessage(i *discordgo.InteractionCreate) string {
 	var (
 		messageString = "```Diff"
 		data          []util.ServerInfo
+		wg            sync.WaitGroup
 	)
 
 	data = util.ProcessAPIResp()
@@ -154,56 +156,64 @@ func createSearchMessage(i *discordgo.InteractionCreate) string {
 	})
 
 	if i.ApplicationCommandData().Options != nil {
-		for _, option := range i.ApplicationCommandData().Options {
 
-			if option.Name == "region" {
-				for i := len(data) - 1; i >= 0; i-- {
-					if data[i].Region != option.StringValue() {
-						data = append(data[:i], data[i+1:]...)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for _, option := range i.ApplicationCommandData().Options {
+
+				if option.Name == "region" {
+					for i := len(data) - 1; i >= 0; i-- {
+						if data[i].Region != option.StringValue() {
+							data = append(data[:i], data[i+1:]...)
+						}
+					}
+				}
+				if option.Name == "name" {
+					for i := len(data) - 1; i >= 0; i-- {
+						if strings.Contains(strings.ToLower(data[i].Name), strings.ToLower(option.StringValue())) {
+							continue
+						} else {
+							data = append(data[:i], data[i+1:]...)
+						}
+					}
+				}
+				if option.Name == "map" {
+					for i := len(data) - 1; i >= 0; i-- {
+						if data[i].Map != option.StringValue() {
+							data = append(data[:i], data[i+1:]...)
+						}
+					}
+				}
+				if option.Name == "map_sp" {
+					for i := len(data) - 1; i >= 0; i-- {
+						if data[i].Map != option.StringValue() {
+							data = append(data[:i], data[i+1:]...)
+						}
+					}
+				}
+				if option.Name == "gamemode" {
+					for i := len(data) - 1; i >= 0; i-- {
+						if data[i].Playlist != option.StringValue() {
+							data = append(data[:i], data[i+1:]...)
+						}
+					}
+				}
+				if option.Name == "gamemode_other" {
+					for i := len(data) - 1; i >= 0; i-- {
+						if data[i].Playlist != option.StringValue() {
+							data = append(data[:i], data[i+1:]...)
+						}
 					}
 				}
 			}
-			if option.Name == "name" {
-				for i := len(data) - 1; i >= 0; i-- {
-					if strings.Contains(strings.ToLower(data[i].Name), strings.ToLower(option.StringValue())) {
-						continue
-					} else {
-						data = append(data[:i], data[i+1:]...)
-					}
-				}
-			}
-			if option.Name == "map" {
-				for i := len(data) - 1; i >= 0; i-- {
-					if data[i].Map != option.StringValue() {
-						data = append(data[:i], data[i+1:]...)
-					}
-				}
-			}
-			if option.Name == "map_sp" {
-				for i := len(data) - 1; i >= 0; i-- {
-					if data[i].Map != option.StringValue() {
-						data = append(data[:i], data[i+1:]...)
-					}
-				}
-			}
-			if option.Name == "gamemode" {
-				for i := len(data) - 1; i >= 0; i-- {
-					if data[i].Playlist != option.StringValue() {
-						data = append(data[:i], data[i+1:]...)
-					}
-				}
-			}
-			if option.Name == "gamemode_other" {
-				for i := len(data) - 1; i >= 0; i-- {
-					if data[i].Playlist != option.StringValue() {
-						data = append(data[:i], data[i+1:]...)
-					}
-				}
-			}
-		}
+		}()
+
 	} else {
 		return "No options passed"
 	}
+
+	wg.Wait()
 
 	messageString = messageString + fmt.Sprintf("\n+ %d servers were found - Showing up to %d results", len(data), maxResults)
 
