@@ -50,9 +50,11 @@ func MessageCreateHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case strings.HasPrefix(m.Content, statusCmd):
 		commands.LegacyStatusHandler(s, m)
 		return
-	case strings.HasPrefix(m.Content, redeemCmd):
-		commands.LegacyRedeemHandler(s, m)
-		return
+	/*
+		case strings.HasPrefix(m.Content, redeemCmd):
+			commands.LegacyRedeemHandler(s, m)
+			return
+	*/
 	case strings.HasPrefix(m.Content, githubCmd):
 		s.ChannelMessageSendReply(m.ChannelID, "https://github.com/R2Northstar", m.Reference())
 		return

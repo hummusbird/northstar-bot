@@ -55,5 +55,4 @@ redeem                 - redeem scorchbucks
 
 ,info                   - displays information about the bot
 
-,redeem                 - redeem scorchbucks
 ```
