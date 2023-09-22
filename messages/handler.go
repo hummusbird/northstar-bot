@@ -34,7 +34,7 @@ func MessageCreateHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	var (
 		statusCmd = prefix + "status"
-		redeemCmd = prefix + "redeem"
+		//redeemCmd = prefix + "redeem"
 		githubCmd = prefix + "github"
 		hostCmd   = prefix + "host"
 		wikiCmd   = prefix + "wiki"
